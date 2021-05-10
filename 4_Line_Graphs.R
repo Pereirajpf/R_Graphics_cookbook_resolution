@@ -104,3 +104,61 @@ ggplot(tg, aes(x = dose, y = length, fill = supp)) +
 
 
 # 4.6 Making a Graph with a Shared Area
+# Convert the sunspot.year data set into a data frame for this example
+sunspotyear <- data.frame(
+  Year     = as.numeric(time(sunspot.year)),
+  Sunspots = as.numeric(sunspot.year)
+)
+
+ggplot(sunspotyear, aes(x = Year, y = Sunspots)) +
+  geom_area()
+
+ggplot(sunspotyear, aes(x = Year, y = Sunspots)) +
+  geom_area(colour="black", fill="blue", alpha=0.2)
+
+ggplot(sunspotyear, aes(x=Year, y=Sunspots)) +
+  geom_area(fill="blue",alpha=0.2) +
+  geom_line()
+
+
+# 4.7 Making a Stacked Area Graph----
+ggplot(uspopage, aes(x=Year, y=Thousands, fill=AgeGroup)) +
+  geom_area()
+
+ggplot(uspopage, aes(x = Year, y = Thousands, fill = AgeGroup)) +
+  geom_area(colour = "black", size = .2, alpha = .4) +
+  scale_fill_brewer(palette = "Blues")
+
+ggplot(uspopage, aes(x = Year, y = Thousands, fill = AgeGroup, order = dplyr::desc(AgeGroup))) +
+  geom_area(colour = NA, alpha = .4) +
+  scale_fill_brewer(palette = "Blues") +
+  geom_line(position = "stack", size = .2)
+
+
+# 4.8 Making a Proportional Stacked Area Graph
+ggplot(uspopage, aes(x = Year, y = Thousands, fill = AgeGroup)) +
+  geom_area(position = "fill", colour = "black", size = .2, alpha = .4) +
+  scale_fill_brewer(palette = "Blues")
+
+ggplot(uspopage, aes(x = Year, y = Thousands, fill = AgeGroup)) +
+  geom_area(position = "fill", colour = "black", size = .2, alpha = .4) +
+  scale_fill_brewer(palette = "Blues") +
+  scale_y_continuous(labels = scales::percent)
+
+
+# 4.9 Adding a Confidence Region----
+# Grab a subset of the climate data
+climate_mod <- climate %>%
+  filter(Source == "Berkeley") %>%
+  select(Year, Anomaly10y, Unc10y)
+
+# Shaded region
+ggplot(climate_mod, aes(x = Year, y = Anomaly10y)) +
+  geom_ribbon(aes(ymin = Anomaly10y - Unc10y, ymax = Anomaly10y + Unc10y), alpha = 0.2) +
+  geom_line()
+
+# With a dotted line for upper and lower bounds
+ggplot(climate_mod, aes(x = Year, y = Anomaly10y)) +
+  geom_line(aes(y = Anomaly10y - Unc10y), colour = "grey50", linetype = "dotted") +
+  geom_line(aes(y = Anomaly10y + Unc10y), colour = "grey50", linetype = "dotted") +
+  geom_line()
